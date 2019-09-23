@@ -56,6 +56,12 @@ router.post(
   catchErrors(authController.update)
 );
 
+/**
+ * API
+ */
+
+router.get('/api/search', catchErrors(storeController.searchStores));
+
 // Do work here
 // router.get('/', (req, res) => {
 //   console.log('hey there!');
