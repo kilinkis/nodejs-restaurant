@@ -8,13 +8,13 @@ const multerOptions = {
   storage: multer.memoryStorage(),
   fileFilter(req, file, next) {
     const isPhoto = file.mimetype.startsWith('image/');
-    if(isPhoto) {
+    if (isPhoto) {
       next(null, true);
     } else {
-      next({ message: 'That filetype isn\'t allowed :('}, false);
+      next({ message: "That filetype isn't allowed :(" }, false);
     }
   }
-}
+};
 
 exports.homePage = (req, res) => {
   res.render('index');
@@ -40,10 +40,11 @@ exports.resize = async (req, res, next) => {
   await photo.write(`./public/uploads/${req.body.photo}`);
   // once we have written the photo to out filesystem, keep running.
   next();
-}
+};
 
 exports.createStore = async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
+  req.body.author = req.user._id;
   const store = await new Store(req.body).save();
   req.flash('success', `Added ${store.name}`);
   res.redirect(`/store/${store.slug}`);
@@ -55,13 +56,19 @@ exports.getStores = async (req, res) => {
   res.render('stores', { title: 'Stores', stores });
 };
 
+const confirmOwner = (store, user) => {
+  if (!store.authore.equals(user.id)) {
+    throw Error('Only owners can edit');
+  }
+};
+
 exports.editStore = async (req, res) => {
   // 1. find store
   const store = await Store.findOne({ _id: req.params.id });
   // 2. confirm user can edit
-  
+  confirmOwner(store, req.user);
   // 3. render form
-  res.render('editStore', { title: `Edit ${store.name}`, store})
+  res.render('editStore', { title: `Edit ${store.name}`, store });
 };
 
 exports.updateStore = async (req, res) => {
@@ -72,16 +79,19 @@ exports.updateStore = async (req, res) => {
     new: true, // return the new store instead of the old one
     runValidators: true
   }).exec();
-  req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="stores/${store.slug}">View Store -></a>`)
+  req.flash(
+    'success',
+    `Successfully updated <strong>${store.name}</strong>. <a href="stores/${store.slug}">View Store -></a>`
+  );
   res.redirect(`/stores/${store._id}/edit`);
   // redirect them and success message
-}
+};
 
 exports.getStoreBySlug = async (req, res, next) => {
-  const store = await Store.findOne({ slug: req.params.slug  });
-  if(!store) return next();
+  const store = await Store.findOne({ slug: req.params.slug }); // .populate('author) would also include the data from the store owner
+  if (!store) return next();
   res.render('store', { store, title: store.name });
-}
+};
 
 exports.getStoresByTag = async (req, res, next) => {
   const tag = req.params.tag;
@@ -89,7 +99,7 @@ exports.getStoresByTag = async (req, res, next) => {
 
   const tagsPromise = Store.getTagsList();
   const storesPromise = Store.find({ tags: tagQuery });
-  const [tags, stores] = await Promise.all([tagsPromise, storesPromise])
+  const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
 
   res.render('tag', { tags, title: 'Tags', tag, stores });
-}
+};
