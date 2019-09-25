@@ -52,7 +52,6 @@ exports.createStore = async (req, res) => {
 
 exports.getStores = async (req, res) => {
   const stores = await Store.find();
-  console.log(stores);
   res.render('stores', { title: 'Stores', stores });
 };
 
@@ -132,13 +131,17 @@ exports.mapStores = async (req, res) => {
         $geometry: {
           type: 'Point',
           coordinates
-        }
-        //$maxDistance: 10000 // km
+        },
+        $maxDistance: 10000 // km
       }
     }
   };
   const stores = await Store.find(q)
-    .select('slug name description location')
+    .select('slug name description location photo')
     .limit(10);
   res.json(stores);
+};
+
+exports.mapPage = (req, res) => {
+  res.render('map', { title: 'Map' });
 };
