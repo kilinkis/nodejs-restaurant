@@ -18,13 +18,12 @@ npm run blowitallaway
 
 That will populate 16 stores with 3 authors and 41 reviews. The logins for the authors are as follows:
 
-|Name|Email (login)|Password|
-|---|---|---|
-|Wes Bos|wes@example.com|wes|
-|Debbie Downer|debbie@example.com|debbie|
-|Beau|beau@example.com|beau|
+| Name          | Email (login)      | Password |
+| ------------- | ------------------ | -------- |
+| Wes Bos       | wes@example.com    | wes      |
+| Debbie Downer | debbie@example.com | debbie   |
+| Beau          | beau@example.com   | beau     |
 
 // TODO:
-1. remove credentials
-2. deploy
-3. add typescript
+
+1. add typescript
